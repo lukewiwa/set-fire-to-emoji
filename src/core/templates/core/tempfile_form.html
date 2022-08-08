@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+<form action="." method="post" enctype="multipart/form-data">
+  {% csrf_token %} 
+  {{ form|crispy }}
+  <input type="submit" value="Set Fire" />
+</form>
+{% endblock %}

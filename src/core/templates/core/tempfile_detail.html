@@ -1,0 +1,15 @@
+{% extends "core/base.html" %} {% block body %}
+<div>
+  <div class="mx-auto p-4 d-flex flex-column align-items-center">
+    <img
+      width="{{ object.output_file.width }}"
+      height="{{ object.output_file.height }}"
+      src="{{ object.output_file.url }}"
+    />
+  </div>
+  <div class="alert alert-warning" role="alert">
+    This page might self destruct on a refresh! Download your file now if you
+    want it.
+  </div>
+</div>
+{% endblock %}

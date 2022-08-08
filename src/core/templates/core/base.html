@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS only -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
+      crossorigin="anonymous"
+    />
+
+    <title>{% block title %}Set Fire{% endblock %}</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand mx-auto" href="{% url 'set-fire' %}"
+          >🔥 Set Fire 🔥</a
+        >
+      </div>
+    </nav>
+    <div class="container grid pt-4" style="max-width: 400px">
+      <div class="g-col-12">{% block body %}{% endblock %}</div>
+    </div>
+  </body>
+</html>

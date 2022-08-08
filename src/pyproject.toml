@@ -1,0 +1,57 @@
+[tool.poetry]
+name = "lambda-set-fire-to-gif"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^4.0.6"
+mangum = "^0.15.0"
+django-storages = {extras = ["boto3"], version = "^1.12.3"}
+pysqlite3-binary = "^0.4.7"
+django-environ = "^0.9.0"
+Pillow = "^9.2.0"
+django-crispy-forms = "^1.14.0"
+crispy-bootstrap5 = "^0.6"
+whitenoise = "^6.2.0"
+
+[tool.poetry.dev-dependencies]
+black = "^22.6.0"
+flake8 = "^5.0.3"
+django-stubs = {extras = ["compatible-mypy"], version = "^1.12.0"}
+isort = "^5.10.1"
+ipython = "^8.4.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.isort]
+profile = "black"
+skip = ["node_modules","migrations"]
+
+[tool.black]
+target-version = ['py39']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.tox
+    | \.venv
+    | migrations
+    | manage
+  )/
+)
+'''
