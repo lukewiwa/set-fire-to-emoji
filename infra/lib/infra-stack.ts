@@ -71,9 +71,17 @@ export class InfraStack extends Stack {
       certificate: setFireCertificate,
     });
 
-    new apigwv2.HttpApi(this, "SetFireHttpApi", {
+    const api = new apigwv2.HttpApi(this, "SetFireHttpApi", {
       defaultIntegration: setFireIntegration,
-      defaultDomainMapping: { domainName: apigwDomainName },
+      createDefaultStage: false,
+    });
+    api.addStage("SetFireDefaultStage", {
+      domainMapping: { domainName: apigwDomainName },
+      autoDeploy: true,
+      throttle: {
+        burstLimit: 50,
+        rateLimit: 500,
+      },
     });
 
     new route53.ARecord(this, "SetFireAliasRecord", {
