@@ -46,6 +46,7 @@ export class InfraStack extends Stack {
         ALLOWED_HOSTS: DOMAIN_NAME,
         AWS_STORAGE_BUCKET_NAME: bucket.bucketName,
       },
+      memorySize: 512,
       timeout: Duration.seconds(20),
       logRetention: logs.RetentionDays.ONE_MONTH,
     });

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class SetFireForm(forms.ModelForm):
-    input_file = forms.FileField(
+    input_file = forms.ImageField(
         label="Image to set on fire:", help_text="Image will be resized and set on fire"
     )
     image_has_transparent_parts = forms.BooleanField(
@@ -69,6 +69,7 @@ class SetFireView(CreateView):
             form.instance.output_file.save(
                 f"{str(uuid4())}.gif", ContentFile(f.read()), save=True
             )
+            logger.info("Generated fire gif with id %s")
             return super().form_valid(form)
 
 
@@ -79,5 +80,5 @@ class ResultView(DetailView):
         try:
             return super().get(request, *args, **kwargs)
         except Http404:
-            logger.warning("%s not found", kwargs["pk"])
+            logger.warning("Couldn't find image with id %s", kwargs["pk"])
             return redirect(reverse("set-fire"))
