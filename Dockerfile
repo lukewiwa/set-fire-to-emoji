@@ -1,8 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.9
-
-RUN yum groupinstall -y "Development Tools" && \
-    curl -fsSL https://rpm.nodesource.com/setup_16.x | bash - && \
-    yum install -y nodejs
+FROM lukewiwa/aws-lambda-python-sqlite:3.9 as base
 
 ENV POETRY_VIRTUALENVS_CREATE="false"
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -15,13 +11,21 @@ RUN cd /tmp/pip-tmp && \
     poetry install && \
     rm -rf /tmp/pip-tmp
 
-ARG APP_DIR=/var/task
-ENV APP_DIR=${APP_DIR}
-WORKDIR ${APP_DIR}
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+FROM base AS dev
 
 ARG DEV_ENV=""
 RUN if [ "${DEV_ENV}" = "vscode" ]; then \
-    yum install --debuglevel=1 -y git zsh vim amazon-linux-extras && \
+    yum groupinstall -y "Development Tools" && \
+    curl -fsSL https://rpm.nodesource.com/setup_16.x | bash - && \
+    yum install --debuglevel=1 -y git zsh vim amazon-linux-extras nodejs && \
     PYTHON=python2 amazon-linux-extras install docker -y && \
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; \
     fi
+
+FROM base AS prod
+
+COPY src/ ${LAMBDA_TASK_ROOT}
+
+CMD [ "config.asgi.handler" ]

@@ -4,8 +4,7 @@
 	"name": "Python 3",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "${localWorkspaceFolder}",
-
+	"workspaceFolder": "/var/task",
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -19,7 +18,6 @@
 				"python.formatting.provider": "black",
 				"editor.formatOnSave": true
 			},
-
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
@@ -39,5 +37,4 @@
 			]
 		}
 	}
-
 }
