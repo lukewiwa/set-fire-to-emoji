@@ -13,12 +13,6 @@ from pathlib import Path
 
 import environ
 
-__import__("pysqlite3")
-import sys
-
-# Use pysqlite3 rather than the inbuilt sqlite3 lib
-sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
-
 env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

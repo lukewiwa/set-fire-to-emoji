@@ -4,17 +4,16 @@ services:
   app:
     container_name: fire-django
     build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
+      context: .
+      dockerfile: Dockerfile
       args:
         DEV_ENV: vscode
-        APP_DIR: ${APP_DIR}
+      target: dev
 
     environment:
       - DEBUG=true
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=localhost,
-      - STATIC_ROOT=${STATIC_ROOT}
       - STATIC_URL=${STATIC_URL}
 
       - AWS_STORAGE_BUCKET_NAME=setfiretempbucket
@@ -32,15 +31,15 @@ services:
       - MYPY_CACHE_DIR=/tmp
 
     volumes:
-      - ..:${APP_DIR}:cached
+      - ..:/var/task:cached
       # vscode extensions cache
       - fire-vscode-ext-cache:/root/.vscode-server/extensions/
       # cache the node modules folder in a volume
-      - node_modules-cache:${APP_DIR}/infra/node_modules
+      - node_modules-cache:/var/task/infra/node_modules
       # Forwards the local Docker socket to the container.
       - /var/run/docker.sock:/var/run/docker.sock
 
-    entrypoint: ${APP_DIR}/.devcontainer/entrypoint.sh
+    entrypoint: /var/task/.devcontainer/entrypoint.sh
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 

@@ -9,7 +9,6 @@ import {
   aws_route53_targets as targets,
   aws_certificatemanager as acm,
 } from "aws-cdk-lib";
-import { PythonFunction } from "@aws-cdk/aws-lambda-python-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha";
 import { Construct } from "constructs";
@@ -35,11 +34,8 @@ export class InfraStack extends Stack {
       lifecycleRules: [{ expiration: Duration.days(1) }],
     });
 
-    const fn = new PythonFunction(this, "SetFireFunction", {
-      entry: "../src/",
-      runtime: lambda.Runtime.PYTHON_3_9,
-      index: "config/asgi.py",
-      handler: "handler",
+    const fn = new lambda.DockerImageFunction(this, "SetFireFunctionDocker", {
+      code: lambda.DockerImageCode.fromImageAsset(".."),
       environment: {
         STATIC_URL: "/static",
         DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
@@ -49,6 +45,7 @@ export class InfraStack extends Stack {
       memorySize: 512,
       timeout: Duration.seconds(20),
       logRetention: logs.RetentionDays.ONE_MONTH,
+      architecture: lambda.Architecture.ARM_64
     });
 
     bucket.grantReadWrite(fn);
