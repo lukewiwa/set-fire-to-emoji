@@ -4,7 +4,7 @@ services:
   app:
     container_name: fire-django
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
       args:
         DEV_ENV: vscode
