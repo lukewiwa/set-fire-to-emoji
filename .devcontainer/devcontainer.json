@@ -33,8 +33,13 @@
 				"ms-python.isort",
 				"yzhang.markdown-all-in-one",
 				"esbenp.prettier-vscode",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"timonwong.shellcheck"
 			]
 		}
+	},
+	"features": {
+		"ghcr.io/customink/codespaces-features/common-amzn:1": {},
+		"ghcr.io/lukewiwa/features/shellcheck:0.2.0": {}
 	}
 }
