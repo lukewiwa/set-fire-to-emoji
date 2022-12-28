@@ -68,7 +68,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "core.middleware.MigrateMiddleware",
+    "django_migrate_middleware.MigrateMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
