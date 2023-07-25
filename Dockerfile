@@ -1,4 +1,4 @@
-FROM lukewiwa/aws-lambda-python-sqlite:3.9 as base
+FROM lukewiwa/aws-lambda-python-sqlite:3.11 as base
 
 ENV POETRY_VIRTUALENVS_CREATE="false"
 RUN pip install --no-cache-dir --upgrade pip && \
