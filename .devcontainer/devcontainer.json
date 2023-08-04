@@ -13,16 +13,17 @@
 			"settings": {
 				"terminal.integrated.defaultProfile.linux": "zsh",
 				"python.defaultInterpreterPath": "/var/lang/bin/python",
-				"python.linting.mypyEnabled": true,
-				"python.linting.enabled": true,
-				"python.formatting.provider": "black",
-				"editor.formatOnSave": true
+				"editor.formatOnSave": true,
+				"[python]": {
+					"editor.defaultFormatter": "ms-python.black-formatter",
+					"editor.formatOnSave": true
+				}
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-python.python",
 				"ms-python.vscode-pylance",
-				"bungcip.better-toml",
+				"tamasfe.even-better-toml",
 				"ms-python.black-formatter",
 				"streetsidesoftware.code-spell-checker",
 				"batisteo.vscode-django",
@@ -33,7 +34,8 @@
 				"ms-python.isort",
 				"yzhang.markdown-all-in-one",
 				"esbenp.prettier-vscode",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docker",
+				"ms-python.mypy-type-checker"
 			]
 		}
 	},
