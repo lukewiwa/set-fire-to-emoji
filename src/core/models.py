@@ -9,4 +9,4 @@ class TempFile(models.Model):
     output_file = models.FileField()
 
     def get_absolute_url(self):
-        return reverse('set-fire-result', kwargs={'pk': self.pk})
+        return reverse("set-fire-result", kwargs={"pk": self.pk})
