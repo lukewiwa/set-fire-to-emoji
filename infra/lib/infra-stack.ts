@@ -50,12 +50,12 @@ export class InfraStack extends Stack {
 
     bucket.grantReadWrite(fn);
 
-    const setFireCertificate = new acm.DnsValidatedCertificate(
+    const setFireCertificate = new acm.Certificate(
       this,
       "SetFireCert",
       {
         domainName: DOMAIN_NAME,
-        hostedZone,
+        validation: acm.CertificateValidation.fromDns(hostedZone)
       }
     );
 
