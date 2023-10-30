@@ -26,18 +26,12 @@ services:
       - FULLY_QUALIFIED_DOMAIN=${FULLY_QUALIFIED_DOMAIN}
       - SUB_DOMAIN=${SUB_DOMAIN}
 
-      - MYPY_CACHE_DIR=/tmp
+      - MYPY_CACHE_DIR=/tmp/.mypy
 
     volumes:
-      - ..:/var/task:cached
-      # vscode extensions cache
-      - fire-vscode-ext-cache:/root/.vscode-server/extensions/
-      # cache the node modules folder in a volume
-      - node_modules-cache:/var/task/infra/node_modules
-      # Forwards the local Docker socket to the container.
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ..:/function:cached
 
-    entrypoint: /var/task/.devcontainer/entrypoint.sh
+    entrypoint: /function/.devcontainer/entrypoint.sh
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
@@ -55,6 +49,4 @@ services:
       - app
 
 volumes:
-  fire-vscode-ext-cache: null
   fire-s3-data: null
-  node_modules-cache: null

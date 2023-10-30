@@ -1,4 +1,6 @@
-FROM public.ecr.aws/lambda/python:3.12-preview as base
+ARG FUNCTION_DIR="/function"
+FROM python:3.12-slim as base
+ARG FUNCTION_DIR
 
 ENV POETRY_VIRTUALENVS_CREATE="false"
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -11,10 +13,13 @@ RUN cd /tmp/pip-tmp && \
     poetry install && \
     rm -rf /tmp/pip-tmp
 
-WORKDIR ${LAMBDA_TASK_ROOT}
+WORKDIR ${FUNCTION_DIR}
 
 FROM base AS prod
+ARG FUNCTION_DIR
 
-COPY src/ ${LAMBDA_TASK_ROOT}
+COPY src/ ${FUNCTION_DIR}
+
+ENTRYPOINT [ "poetry", "run","python", "-m", "awslambdaric" ]
 
 CMD [ "config.asgi.handler" ]

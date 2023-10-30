@@ -4,7 +4,7 @@
 	"name": "Python 3",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/var/task",
+	"workspaceFolder": "/function",
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
@@ -34,12 +34,29 @@
 				"ms-python.isort",
 				"yzhang.markdown-all-in-one",
 				"esbenp.prettier-vscode",
-				"ms-azuretools.vscode-docker",
 				"ms-python.mypy-type-checker"
 			]
 		}
 	},
 	"features": {
-		"./wiwa-essentials": {}
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"configureZshAsDefaultShell": true,
+			"installOhMyZsh": true,
+			"installOhMyZshConfig": true,
+			"upgradePackages": true,
+			"username": "automatic",
+			"userUid": "automatic",
+			"userGid": "automatic"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "os-provided"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "18",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 	}
 }
