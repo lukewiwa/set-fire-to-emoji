@@ -6,9 +6,7 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-      args:
-        DEV_ENV: vscode
-      target: dev
+      target: base
 
     environment:
       - DEBUG=true

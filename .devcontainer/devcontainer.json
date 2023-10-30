@@ -40,7 +40,6 @@
 		}
 	},
 	"features": {
-		"ghcr.io/customink/codespaces-features/common-amzn:1": {},
-		"ghcr.io/lukewiwa/features/shellcheck:0.2.1": {}
+		"./wiwa-essentials": {}
 	}
 }

@@ -1,4 +1,4 @@
-FROM lukewiwa/aws-lambda-python-sqlite:3.11 as base
+FROM public.ecr.aws/lambda/python:3.12-preview as base
 
 ENV POETRY_VIRTUALENVS_CREATE="false"
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -12,16 +12,6 @@ RUN cd /tmp/pip-tmp && \
     rm -rf /tmp/pip-tmp
 
 WORKDIR ${LAMBDA_TASK_ROOT}
-
-FROM base AS dev
-
-ARG DEV_ENV=""
-RUN if [ "${DEV_ENV}" = "vscode" ]; then \
-    yum groupinstall -y "Development Tools" && \
-    curl -fsSL https://rpm.nodesource.com/setup_16.x | bash - && \
-    yum install --debuglevel=1 -y git vim amazon-linux-extras nodejs && \
-    PYTHON=python2 amazon-linux-extras install docker -y; \
-    fi
 
 FROM base AS prod
 
