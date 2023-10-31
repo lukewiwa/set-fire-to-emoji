@@ -15,8 +15,12 @@
 				"python.defaultInterpreterPath": "/var/lang/bin/python",
 				"editor.formatOnSave": true,
 				"[python]": {
-					"editor.defaultFormatter": "ms-python.black-formatter",
-					"editor.formatOnSave": true
+					"editor.defaultFormatter": "charliermarsh.ruff",
+					"editor.formatOnSave": true,
+					"editor.codeActionsOnSave": {
+						"source.fixAll": true,
+						"source.organizeImports": true
+					}
 				}
 			},
 			// Add the IDs of extensions you want installed when the container is created.
@@ -24,17 +28,16 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"tamasfe.even-better-toml",
-				"ms-python.black-formatter",
 				"streetsidesoftware.code-spell-checker",
 				"batisteo.vscode-django",
 				"eamodio.gitlens",
 				"dbaeumer.vscode-eslint",
 				"VisualStudioExptTeam.vscodeintellicode",
 				"VisualStudioExptTeam.intellicode-api-usage-examples",
-				"ms-python.isort",
 				"yzhang.markdown-all-in-one",
 				"esbenp.prettier-vscode",
-				"ms-python.mypy-type-checker"
+				"ms-python.mypy-type-checker",
+				"charliermarsh.ruff"
 			]
 		}
 	},
