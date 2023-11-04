@@ -12,6 +12,7 @@ import {
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha";
 import { Construct } from "constructs";
+import { uuidv7 } from "uuidv7";
 
 export class InfraStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -35,29 +36,27 @@ export class InfraStack extends Stack {
     });
 
     const fn = new lambda.DockerImageFunction(this, "SetFireFunctionDocker", {
-      code: lambda.DockerImageCode.fromImageAsset(".."),
+      code: lambda.DockerImageCode.fromImageAsset("..", {
+        assetName: `${SUB_DOMAIN}-${uuidv7()}`,
+      }),
       environment: {
         STATIC_URL: "/static",
         DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
         ALLOWED_HOSTS: DOMAIN_NAME,
         AWS_STORAGE_BUCKET_NAME: bucket.bucketName,
       },
-      memorySize: 512,
+      memorySize: 1024,
       timeout: Duration.seconds(20),
       logRetention: logs.RetentionDays.ONE_MONTH,
-      architecture: lambda.Architecture.ARM_64
+      architecture: lambda.Architecture.ARM_64,
     });
 
     bucket.grantReadWrite(fn);
 
-    const setFireCertificate = new acm.Certificate(
-      this,
-      "SetFireCert",
-      {
-        domainName: DOMAIN_NAME,
-        validation: acm.CertificateValidation.fromDns(hostedZone)
-      }
-    );
+    const setFireCertificate = new acm.Certificate(this, "SetFireCert", {
+      domainName: DOMAIN_NAME,
+      validation: acm.CertificateValidation.fromDns(hostedZone),
+    });
 
     const setFireIntegration = new HttpLambdaIntegration(
       "setFireIntegration",
