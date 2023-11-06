@@ -12,7 +12,6 @@ import {
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha";
 import { Construct } from "constructs";
-import { uuidv7 } from "uuidv7";
 
 export class InfraStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -36,9 +35,7 @@ export class InfraStack extends Stack {
     });
 
     const fn = new lambda.DockerImageFunction(this, "SetFireFunctionDocker", {
-      code: lambda.DockerImageCode.fromImageAsset("..", {
-        assetName: `${SUB_DOMAIN}-${uuidv7()}`,
-      }),
+      code: lambda.DockerImageCode.fromImageAsset(".."),
       environment: {
         STATIC_URL: "/static",
         DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
