@@ -3,8 +3,8 @@
 
 {% block body %}
 <form action="." method="post" enctype="multipart/form-data">
-  {% csrf_token %} 
+  {% csrf_token %}
   {{ form|crispy }}
-  <input type="submit" value="Set Fire" />
+  <input type="submit" value="{{ action }}" />
 </form>
 {% endblock %}
