@@ -11,8 +11,8 @@ from django.urls import reverse
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView
 from PIL import Image, ImageSequence
-from core.forms import OldManYellsAtForm, SetFireForm
 
+from core.forms import OldManYellsAtForm, SetFireForm
 from core.models import TempFile
 
 logger = logging.getLogger(__name__)
@@ -29,11 +29,14 @@ class SetFireView(CreateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["action"] = "Set Fire"
+        context["template_file"] = "templates/fire.gif"
         return context
 
     def form_valid(self, form: SetFireForm):
         transparent = form.cleaned_data["image_has_transparent_parts"]
-        with Image.open(settings.BASE_DIR / "fire.gif") as im, io.BytesIO() as f:
+        with Image.open(
+            settings.EMOJI_TEMPLATES_DIR / "fire.gif"
+        ) as im, io.BytesIO() as f:
             images = []
             transparency = im.info["transparency"]
             duration = im.info["duration"]
@@ -76,6 +79,7 @@ class OldManYellsAtView(CreateView):
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["action"] = "Yell At"
+        context["template_file"] = "templates/old-man-yells-at.png"
         return context
 
     def form_valid(self, form: OldManYellsAtForm):
@@ -84,7 +88,7 @@ class OldManYellsAtView(CreateView):
             (48, 48), resample=Image.Resampling.LANCZOS, reducing_gap=10.0
         )
         with Image.open(
-            settings.BASE_DIR / "old-man-yells-at.png"
+            settings.EMOJI_TEMPLATES_DIR / "old-man-yells-at.png"
         ) as im, io.BytesIO() as f:
             output_image = im.copy()
             output_image.paste(input_image, (2, 2))

@@ -2,7 +2,7 @@
 {% block body %}
 <div>
   <h1>Emoji Tools</h1>
-  <div><a href="{% url 'set-fire' %}">Set Fire to Emoji</a></div>
-  <div><a href="{% url 'old-man-yells-at' %}">Old Man Yells At Emoji</a></div>
+  {% include "core/includes/tool_entry.html" with url_name="set-fire" url_display="Set Fire To Emoji" template_file="templates/fire.gif" %}
+  {% include "core/includes/tool_entry.html" with url_name="old-man-yells-at" url_display="Old Man Yells At Emoji" template_file="templates/old-man-yells-at.png" %}
 </div>
 {% endblock %}

@@ -5,3 +5,7 @@ runserver:
 .PHONY: deploy
 deploy:
 	cd infra && npm run cdk -- deploy --require-approval never
+
+.PHONY: static-build
+static-build:
+	python src/manage.py collectstatic --noinput --clear

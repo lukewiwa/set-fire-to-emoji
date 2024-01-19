@@ -17,6 +17,7 @@ env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+EMOJI_TEMPLATES_DIR = BASE_DIR / "core" / "static" / "templates"
 
 
 # Quick-start development settings - unsuitable for production
@@ -140,6 +141,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
+STATIC_ROOT = "/bundle"
 STATIC_URL = "static/"
 WHITENOISE_ROOT = BASE_DIR / "public"
 

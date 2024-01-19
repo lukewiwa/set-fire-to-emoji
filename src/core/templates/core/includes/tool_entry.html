@@ -1,0 +1,7 @@
+{% load static %}
+{% with dimension=dimension|default:"48" %}
+  <div class="d-flex flex-row align-items-end">
+    <a href="{% url url_name %}">{{ url_display }}</a>
+    <img src="{% static template_file %}" width={{ dimension }} height={{ dimension }} />
+  </div>
+{% endwith %}
