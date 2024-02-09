@@ -1,6 +1,8 @@
 .DS_Store
-.git
+.git/
+.vscode/
 node_modules/
 .devcontainer/
 infra/
-
+mypy_cache/
+__pycache__/
