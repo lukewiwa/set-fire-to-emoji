@@ -3,15 +3,13 @@ FROM python:3.12-slim as base
 ARG FUNCTION_DIR
 
 ENV POETRY_VIRTUALENVS_CREATE="false"
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir poetry
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip poetry
 
 # Install project deps
-WORKDIR /tmp/pip-tmp/
-COPY src/poetry.lock src/pyproject.toml ./
-RUN cd /tmp/pip-tmp && \
-    poetry install && \
-    rm -rf /tmp/pip-tmp
+RUN --mount=type=cache,target=/root/.cache/pypoetry \
+    --mount=type=bind,source=src,target=/tmp/pip-tmp/ \
+    poetry --directory=/tmp/pip-tmp/ install
 
 WORKDIR ${FUNCTION_DIR}
 
