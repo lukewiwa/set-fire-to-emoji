@@ -39,7 +39,7 @@ export class InfraStack extends Stack {
       environment: {
         STATIC_URL: "/static",
         DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
-        ALLOWED_HOSTS: DOMAIN_NAME,
+        ALLOWED_HOSTS: `${DOMAIN_NAME},localhost`,
         AWS_STORAGE_BUCKET_NAME: bucket.bucketName,
       },
       memorySize: 1024,

@@ -35,4 +35,4 @@ COPY src/ ${FUNCTION_DIR}
 
 EXPOSE 8080
 
-CMD ["poetry", "run", "gunicorn", "config.wsgi:application", "--workers=1", "--bind=0.0.0.0:8080"]
+CMD ["poetry", "run", "gunicorn", "config.wsgi:application"]
