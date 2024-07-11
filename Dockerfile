@@ -2,6 +2,8 @@ ARG FUNCTION_DIR="/function"
 FROM python:3.12-slim as base
 ARG FUNCTION_DIR
 
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.3 /lambda-adapter /opt/extensions/lambda-adapter
+
 ENV POETRY_VIRTUALENVS_CREATE="false"
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip poetry
@@ -31,6 +33,6 @@ COPY --from=builder /bundle /bundle
 
 COPY src/ ${FUNCTION_DIR}
 
-ENTRYPOINT [ "poetry", "run","python", "-m", "awslambdaric" ]
+EXPOSE 8080
 
-CMD [ "config.asgi.handler" ]
+CMD ["poetry", "run", "gunicorn", "config.wsgi:application", "--workers=1", "--bind=0.0.0.0:8080"]

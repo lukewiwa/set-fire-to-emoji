@@ -49,13 +49,6 @@ LOGGING = {
             "formatter": "django.server",
         },
     },
-    "loggers": {
-        "mangum": {
-            "handlers": ["django.server"],
-            "level": "INFO",
-            "propagate": False,
-        },
-    },
 }
 
 

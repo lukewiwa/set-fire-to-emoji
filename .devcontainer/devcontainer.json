@@ -60,6 +60,7 @@
 			"version": "18",
 			"nvmVersion": "latest"
 		},
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+		"ghcr.io/dhoeric/features/hadolint:1": {}
 	}
 }
