@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 from pathlib import Path
+import sys
 
+from django.utils.log import DEFAULT_LOGGING
 import environ
-import structlog
 
 
 env = environ.Env()
@@ -38,51 +39,14 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "root": {"level": "INFO", "handlers": ["console"]},
-    "formatters": {
-        "generic": {
-            "format": "%(asctime)s [%(process)d] [%(levelname)s] %(message)s",
-            "datefmt": "[%Y-%m-%d %H:%M:%S %z]",
-            "class": "logging.Formatter",
-        },
-        "json_formatter": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.JSONRenderer(),
-        },
-        "plain_console": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.dev.ConsoleRenderer(),
-        },
-        "key_value": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.KeyValueRenderer(
-                key_order=["timestamp", "level", "event", "logger"]
-            ),
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "plain_console",
-        },
-        "error_console": {
-            "class": "logging.StreamHandler",
-            "formatter": "plain_console",
-        },
-        "json": {
-            "class": "logging.StreamHandler",
-            "formatter": "json_formatter",
-        },
-    },
+    "filters": DEFAULT_LOGGING["filters"],
+    "formatters": DEFAULT_LOGGING["formatters"],
+    "handlers": DEFAULT_LOGGING["handlers"],
     "loggers": {
-        "gunicorn.error": {
-            "level": "INFO",
-            "handlers": ["error_console", "json"],
-            "propagate": True,
-            "qualname": "gunicorn.error",
-        },
+        **DEFAULT_LOGGING["loggers"],
         "gunicorn.access": {
             "level": "INFO",
-            "handlers": ["console", "json"],
+            "handlers": ["django.server"],
             "propagate": True,
             "qualname": "gunicorn.access",
         },
@@ -97,7 +61,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "crispy_bootstrap5",
-    "django_structlog",
 ]
 
 MIDDLEWARE = [
@@ -107,7 +70,6 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_structlog.middlewares.RequestMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

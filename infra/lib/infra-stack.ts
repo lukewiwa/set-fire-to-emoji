@@ -8,9 +8,9 @@ import {
   aws_route53 as route53,
   aws_route53_targets as targets,
   aws_certificatemanager as acm,
+  aws_apigatewayv2 as apigwv2,
 } from "aws-cdk-lib";
-import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import * as apigwv2 from "@aws-cdk/aws-apigatewayv2-alpha";
+import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { Construct } from "constructs";
 
 export class InfraStack extends Stack {
@@ -39,7 +39,7 @@ export class InfraStack extends Stack {
       environment: {
         STATIC_URL: "/static",
         DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
-        ALLOWED_HOSTS: `${DOMAIN_NAME},localhost`,
+        ALLOWED_HOSTS: `${DOMAIN_NAME},127.0.0.1`,
         AWS_STORAGE_BUCKET_NAME: bucket.bucketName,
       },
       memorySize: 1024,
