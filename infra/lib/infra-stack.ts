@@ -10,6 +10,7 @@ import {
   aws_certificatemanager as acm,
   aws_apigatewayv2 as apigwv2,
 } from "aws-cdk-lib";
+import { CfnStage } from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { Construct } from "constructs";
 
@@ -69,7 +70,7 @@ export class InfraStack extends Stack {
       defaultIntegration: setFireIntegration,
       createDefaultStage: false,
     });
-    api.addStage("SetFireDefaultStage", {
+    const defaultStage = api.addStage("SetFireDefaultStage", {
       domainMapping: { domainName: apigwDomainName },
       autoDeploy: true,
       throttle: {
@@ -77,6 +78,24 @@ export class InfraStack extends Stack {
         rateLimit: 500,
       },
     });
+    const cfnStage = defaultStage.node.defaultChild as CfnStage;
+    const accessLogs = new logs.LogGroup(this, "SetFireAccessLogs", {
+      retention: logs.RetentionDays.ONE_WEEK,
+    });
+    cfnStage.accessLogSettings = {
+      destinationArn: accessLogs.logGroupArn,
+      format: JSON.stringify({
+        requestId: "$context.requestId",
+        ip: "$context.identity.sourceIp",
+        requestTime: "$context.requestTime",
+        httpMethod: "$context.httpMethod",
+        routeKey: "$context.routeKey",
+        path: "$context.path",
+        status: "$context.status",
+        protocol: "$context.protocol",
+        responseLength: "$context.responseLength",
+      }),
+    };
 
     new route53.ARecord(this, "SetFireAliasRecord", {
       zone: hostedZone,

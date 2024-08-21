@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.241.1/containers/python-3
 {
-	"name": "Python 3",
+	"name": "Emoji Tools",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/function",
@@ -18,8 +18,8 @@
 					"editor.defaultFormatter": "charliermarsh.ruff",
 					"editor.formatOnSave": true,
 					"editor.codeActionsOnSave": {
-						"source.fixAll": true,
-						"source.organizeImports": true
+						"source.fixAll": "explicit",
+						"source.organizeImports": "explicit"
 					}
 				}
 			},

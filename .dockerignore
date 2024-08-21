@@ -1,8 +1,10 @@
-.DS_Store
+**/.DS_Store
 .git/
 .vscode/
-node_modules/
+**/node_modules/
 .devcontainer/
+**/.venv/
 infra/
-mypy_cache/
-__pycache__/
+**/.ruff_cache/
+**/mypy_cache/
+**/__pycache__/
