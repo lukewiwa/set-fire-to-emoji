@@ -1,17 +1,17 @@
 ARG FUNCTION_DIR="/function"
-FROM python:3.12-slim as base
+FROM python:3.12-slim AS base
 ARG FUNCTION_DIR
 
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.3 /lambda-adapter /opt/extensions/lambda-adapter
 
 ENV POETRY_VIRTUALENVS_CREATE="false"
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --upgrade pip poetry
+  pip install --upgrade pip poetry
 
 # Install project deps
 RUN --mount=type=cache,target=/root/.cache/pypoetry \
-    --mount=type=bind,source=src,target=/tmp/pip-tmp/ \
-    poetry --directory=/tmp/pip-tmp/ install
+  --mount=type=bind,source=src,target=/tmp/pip-tmp/ \
+  poetry --directory=/tmp/pip-tmp/ install
 
 WORKDIR ${FUNCTION_DIR}
 

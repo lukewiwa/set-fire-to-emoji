@@ -68,7 +68,7 @@ class SetFireView(CreateView):
             form.instance.output_file.save(
                 f"{str(uuid4())}.gif", ContentFile(f.read()), save=True
             )
-            logger.info("Generated fire gif with id %s")
+            logger.info("Generated fire gif with id %s", form.instance.pk)
             return super().form_valid(form)
 
 
@@ -97,7 +97,7 @@ class OldManYellsAtView(CreateView):
             form.instance.output_file.save(
                 f"{str(uuid4())}.gif", ContentFile(f.read()), save=True
             )
-            logger.info("Generated fire gif with id %s")
+            logger.info("Generated fire gif with id %s", form.instance.pk)
         return super().form_valid(form)
 
 

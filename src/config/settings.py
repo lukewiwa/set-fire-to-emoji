@@ -9,12 +9,11 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+
 from pathlib import Path
-import sys
 
-from django.utils.log import DEFAULT_LOGGING
 import environ
-
+from django.utils.log import DEFAULT_LOGGING
 
 env = environ.Env()
 
@@ -41,7 +40,13 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
     "filters": DEFAULT_LOGGING["filters"],
     "formatters": DEFAULT_LOGGING["formatters"],
-    "handlers": DEFAULT_LOGGING["handlers"],
+    "handlers": {
+        **DEFAULT_LOGGING["handlers"],
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+        },
+    },
     "loggers": {
         **DEFAULT_LOGGING["loggers"],
         "gunicorn.access": {
