@@ -66,10 +66,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "crispy_bootstrap5",
+    "migrate_middleware",
 ]
 
 MIDDLEWARE = [
-    "django_migrate_middleware.MigrateMiddleware",
+    "migrate_middleware.MigrateMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
