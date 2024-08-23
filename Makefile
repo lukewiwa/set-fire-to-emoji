@@ -1,6 +1,6 @@
 .PHONY: runserver
 runserver:
-	python ./src/manage.py runserver 0.0.0.0:8080
+	cd src && uv run python ./manage.py runserver 0.0.0.0:8080
 
 .PHONY: deploy
 deploy:
@@ -8,4 +8,4 @@ deploy:
 
 .PHONY: static-build
 static-build:
-	python src/manage.py collectstatic --noinput --clear
+	cd src && uv run python ./manage.py collectstatic --noinput --clear
