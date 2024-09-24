@@ -9,6 +9,8 @@ import {
   aws_route53_targets as targets,
   aws_certificatemanager as acm,
   aws_apigatewayv2 as apigwv2,
+  aws_cloudfront as cloudfront,
+  aws_cloudfront_origins as origins,
 } from "aws-cdk-lib";
 import { CfnStage } from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
@@ -35,10 +37,18 @@ export class InfraStack extends Stack {
       lifecycleRules: [{ expiration: Duration.days(1) }],
     });
 
+    const distribution = new cloudfront.Distribution(
+      this,
+      "SetFireCloudfrontDistribution",
+      {
+        defaultBehavior: { origin: new origins.HttpOrigin(DOMAIN_NAME) },
+      }
+    );
+
     const fn = new lambda.DockerImageFunction(this, "SetFireFunctionDocker", {
       code: lambda.DockerImageCode.fromImageAsset(".."),
       environment: {
-        STATIC_URL: "/static",
+        STATIC_HOST: `https://${distribution.distributionDomainName}`,
         DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
         ALLOWED_HOSTS: `${DOMAIN_NAME},127.0.0.1`,
         AWS_STORAGE_BUCKET_NAME: bucket.bucketName,

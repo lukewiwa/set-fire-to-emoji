@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from urllib.parse import urljoin
 
 import environ
 from django.utils.log import DEFAULT_LOGGING
@@ -49,12 +50,6 @@ LOGGING = {
     },
     "loggers": {
         **DEFAULT_LOGGING["loggers"],
-        "gunicorn.access": {
-            "level": "INFO",
-            "handlers": ["django.server"],
-            "propagate": True,
-            "qualname": "gunicorn.access",
-        },
     },
 }
 
@@ -143,7 +138,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_ROOT = "/bundle"
-STATIC_URL = "static/"
+STATIC_URL = urljoin(env.str("STATIC_HOST", default=""), "static/")
 WHITENOISE_ROOT = BASE_DIR / "public"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
