@@ -15,14 +15,16 @@ import {
 import { CfnStage } from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { Construct } from "constructs";
+import { DOMAIN_NAME, FULLY_QUALIFIED_DOMAIN } from "./settings";
 
 export class InfraStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    certificate: acm.Certificate,
+    props?: StackProps
+  ) {
     super(scope, id, props);
-
-    const FULLY_QUALIFIED_DOMAIN = process.env.FULLY_QUALIFIED_DOMAIN ?? "";
-    const SUB_DOMAIN = process.env.SUB_DOMAIN ?? "";
-    const DOMAIN_NAME = `${SUB_DOMAIN}.${FULLY_QUALIFIED_DOMAIN}`;
 
     const hostedZone = route53.HostedZone.fromLookup(
       this,
@@ -37,18 +39,9 @@ export class InfraStack extends Stack {
       lifecycleRules: [{ expiration: Duration.days(1) }],
     });
 
-    const distribution = new cloudfront.Distribution(
-      this,
-      "SetFireCloudfrontDistribution",
-      {
-        defaultBehavior: { origin: new origins.HttpOrigin(DOMAIN_NAME) },
-      }
-    );
-
     const fn = new lambda.DockerImageFunction(this, "SetFireFunctionDocker", {
       code: lambda.DockerImageCode.fromImageAsset(".."),
       environment: {
-        STATIC_HOST: `https://${distribution.distributionDomainName}`,
         DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
         ALLOWED_HOSTS: `${DOMAIN_NAME},127.0.0.1`,
         AWS_STORAGE_BUCKET_NAME: bucket.bucketName,
@@ -61,27 +54,16 @@ export class InfraStack extends Stack {
 
     bucket.grantReadWrite(fn);
 
-    const setFireCertificate = new acm.Certificate(this, "SetFireCert", {
-      domainName: DOMAIN_NAME,
-      validation: acm.CertificateValidation.fromDns(hostedZone),
-    });
-
     const setFireIntegration = new HttpLambdaIntegration(
       "setFireIntegration",
       fn
     );
-
-    const apigwDomainName = new apigwv2.DomainName(this, "SetFireDomainName", {
-      domainName: DOMAIN_NAME,
-      certificate: setFireCertificate,
-    });
 
     const api = new apigwv2.HttpApi(this, "SetFireHttpApi", {
       defaultIntegration: setFireIntegration,
       createDefaultStage: false,
     });
     const defaultStage = api.addStage("SetFireDefaultStage", {
-      domainMapping: { domainName: apigwDomainName },
       autoDeploy: true,
       throttle: {
         burstLimit: 50,
@@ -107,14 +89,33 @@ export class InfraStack extends Stack {
       }),
     };
 
+    // This is apparently the structure of the API endpoint
+    // https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-custom-domain-names.html
+    const distribution = new cloudfront.Distribution(
+      this,
+      "SetFireCloudfrontDistribution",
+      {
+        certificate,
+        domainNames: [DOMAIN_NAME],
+        defaultBehavior: {
+          origin: new origins.HttpOrigin(
+            `${api.apiId}.execute-api.${this.region}.amazonaws.com`
+          ),
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+          originRequestPolicy:
+            cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+          allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+      }
+    );
+
     new route53.ARecord(this, "SetFireAliasRecord", {
       zone: hostedZone,
       recordName: DOMAIN_NAME,
       target: route53.RecordTarget.fromAlias(
-        new targets.ApiGatewayv2DomainProperties(
-          apigwDomainName.regionalDomainName,
-          apigwDomainName.regionalHostedZoneId
-        )
+        new targets.CloudFrontTarget(distribution)
       ),
     });
   }
