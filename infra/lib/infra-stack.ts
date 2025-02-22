@@ -101,6 +101,21 @@ export class InfraStack extends Stack {
           origin: new origins.HttpOrigin(
             `${api.apiId}.execute-api.${this.region}.amazonaws.com`
           ),
+          functionAssociations: [
+            {
+              function: new cloudfront.Function(
+                this,
+                "SetFireForwardHeaderCfFunction",
+                {
+                  code: cloudfront.FunctionCode.fromFile({
+                    filePath: "./lib/forwardHostFunction.js",
+                  }),
+                  runtime: cloudfront.FunctionRuntime.JS_2_0,
+                }
+              ),
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+            },
+          ],
           cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
           originRequestPolicy:
             cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,

@@ -34,6 +34,7 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
+USE_X_FORWARDED_HOST = True
 
 LOGGING = {
     "version": 1,
