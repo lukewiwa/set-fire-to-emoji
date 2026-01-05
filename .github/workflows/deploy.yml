@@ -1,0 +1,71 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: false
+        default: 'production'
+
+permissions:
+  id-token: write   # Required for OIDC authentication
+  contents: read    # Required to checkout code
+
+env:
+  NODE_VERSION: '18'
+  AWS_REGION: 'us-east-1'  # Adjust to your preferred region
+
+jobs:
+  deploy:
+    name: Deploy CDK Stack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'infra/package-lock.json'
+
+      - name: Install CDK dependencies
+        run: |
+          cd infra
+          npm ci
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: GitHubActions-CDK-Deploy
+
+      - name: Build CDK project
+        run: |
+          cd infra
+          npm run build
+
+      - name: CDK Diff
+        run: |
+          cd infra
+          npx cdk diff --all
+        env:
+          FULLY_QUALIFIED_DOMAIN: ${{ secrets.FULLY_QUALIFIED_DOMAIN }}
+          SUB_DOMAIN: ${{ secrets.SUB_DOMAIN }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+
+      - name: CDK Deploy
+        run: |
+          cd infra
+          npx cdk deploy --all --require-approval never
+        env:
+          FULLY_QUALIFIED_DOMAIN: ${{ secrets.FULLY_QUALIFIED_DOMAIN }}
+          SUB_DOMAIN: ${{ secrets.SUB_DOMAIN }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
