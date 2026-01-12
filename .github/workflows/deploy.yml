@@ -55,7 +55,7 @@ jobs:
       - name: CDK Diff
         run: |
           cd infra
-          npx cdk diff --all
+          npx cdk diff SetFireCertificateStack SetFireInfraStack
         env:
           FULLY_QUALIFIED_DOMAIN: ${{ secrets.FULLY_QUALIFIED_DOMAIN }}
           SUB_DOMAIN: ${{ secrets.SUB_DOMAIN }}
@@ -64,7 +64,7 @@ jobs:
       - name: CDK Deploy
         run: |
           cd infra
-          npx cdk deploy --all --require-approval never
+          npx cdk deploy SetFireCertificateStack SetFireInfraStack --require-approval never
         env:
           FULLY_QUALIFIED_DOMAIN: ${{ secrets.FULLY_QUALIFIED_DOMAIN }}
           SUB_DOMAIN: ${{ secrets.SUB_DOMAIN }}
