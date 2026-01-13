@@ -2,21 +2,21 @@
 name = "lambda-set-fire-to-gif"
 version = "0.1.0"
 description = ""
-requires-python = ">=3.12,<3.13"
+requires-python = ">=3.13,<3.14"
 dependencies = [
   "django-environ>=0.11.2",
   "django==4.2.*",
-  "pillow>=10.1.0",
   "django-crispy-forms>=1.14.0",
   "crispy-bootstrap5>=0.6",
   "whitenoise>=6.6.0",
   "django-migrate-middleware>=3.0.0",
   "gunicorn>=22.0.0",
-  "django-storages[s3]==1.14.2",
+  "django-storages[s3]>=1.14.2",
+  "pillow>=10.4.0",
 ]
 
-[tool.uv]
-dev-dependencies = ["ruff>=0.6.1", "django-stubs>=5.0.4", "ipython>=8.26.0"]
+[dependency-groups]
+dev = ["ruff>=0.6.1", "django-stubs>=5.0.4", "ipython>=8.26.0"]
 
 [build-system]
 requires = ["hatchling"]

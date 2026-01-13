@@ -37,11 +37,13 @@
 				"yzhang.markdown-all-in-one",
 				"esbenp.prettier-vscode",
 				"ms-python.mypy-type-checker",
-				"charliermarsh.ruff"
+				"charliermarsh.ruff",
+				"nefrob.vscode-just-syntax"
 			]
 		}
 	},
 	"features": {
+		"ghcr.io/jsburckhardt/devcontainer-features/just:1": {},
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": true,
 			"configureZshAsDefaultShell": true,
@@ -61,6 +63,7 @@
 			"nvmVersion": "latest"
 		},
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+		"ghcr.io/devcontainers/features/aws-cli:1": {},
 		"ghcr.io/dhoeric/features/hadolint:1": {}
 	}
 }
