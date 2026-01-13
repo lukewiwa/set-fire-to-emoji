@@ -5,46 +5,67 @@ services:
       context: ..
       dockerfile: Dockerfile
       target: base
-
     environment:
       - DEBUG=true
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=localhost,0.0.0.0
       - STATIC_URL=${STATIC_URL}
 
-      - AWS_STORAGE_BUCKET_NAME=setfiretempbucket
-      - AWS_S3_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-      - AWS_S3_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-      - AWS_S3_ENDPOINT_URL=http://localhost:9000 # local mock S3 container
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME:-setfiretempbucket}
+      - AWS_S3_ACCESS_KEY_ID=${AWS_S3_ACCESS_KEY_ID:-aws_s3_admin}
+      - AWS_S3_SECRET_ACCESS_KEY=${AWS_S3_SECRET_ACCESS_KEY:-aws_s3_admin}
+      - AWS_S3_ENDPOINT_URL=http://localhost:${S3_PORT:-9000} # local mock S3 container
+      - AWS_S3_PROXIES=http=http://s3:9000
 
       # CDK deployment
-      - AWS_ACCESS_KEY_ID=${AWS_CDK_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_CDK_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
       - FULLY_QUALIFIED_DOMAIN=${FULLY_QUALIFIED_DOMAIN}
       - SUB_DOMAIN=${SUB_DOMAIN}
-
-      - MYPY_CACHE_DIR=/tmp/.mypy
-
     volumes:
-      - ..:/function:cached
-
-    entrypoint: /function/.devcontainer/entrypoint.sh
+      - ..:/function
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
-
     ports:
-      - ${DJANGO_PORT:-8080}:8080
-      - 9000:9000
+      - "${DJANGO_PORT:-8080}:8080"
 
   s3:
     container_name: fire-s3
-    image: scireum/s3-ninja
-    network_mode: service:app
+    image: rustfs/rustfs:latest
+    ports:
+      - "${S3_PORT:-9000}:9000"
+      - "${S3_ADMIN_PORT:-9001}:9001"
+    environment:
+      - RUSTFS_ADDRESS=0.0.0.0:9000
+      - RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001
+      - RUSTFS_CONSOLE_ENABLE=true
+      - RUSTFS_EXTERNAL_ADDRESS=localhost:${S3_PORT:-9000} # Same as internal since no port mapping
+      - RUSTFS_ACCESS_KEY=${AWS_S3_ACCESS_KEY_ID:-aws_s3_admin}
+      - RUSTFS_SECRET_KEY=${AWS_S3_SECRET_ACCESS_KEY:-aws_s3_admin}
     volumes:
-      - fire-s3-data:/home/sirius/data
+      - fire-s3-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "sh",
+          "-c",
+          "curl -f http://localhost:9000/health && curl -f http://localhost:9001/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  s3-create-bucket:
+    container_name: fire-s3-create-bucket
+    image: public.ecr.aws/aws-cli/aws-cli:latest
     depends_on:
-      - app
+      s3:
+        condition: service_healthy
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_S3_ACCESS_KEY_ID:-aws_s3_admin}
+      - AWS_SECRET_ACCESS_KEY=${AWS_S3_SECRET_ACCESS_KEY:-aws_s3_admin}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-ap-southeast-2}
+    command: s3api --endpoint-url http://s3:9000 create-bucket --no-cli-pager --bucket ${AWS_STORAGE_BUCKET_NAME:-setfiretempbucket}
 
 volumes:
   fire-s3-data: null

@@ -139,9 +139,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_ROOT = "/bundle"
-STATIC_URL = urljoin(env.str("STATIC_HOST", default=""), "static/")
+STATIC_URL = urljoin(env.str("STATIC_HOST", default="/"), "static/")
 WHITENOISE_ROOT = BASE_DIR / "public"
 
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "bucket_name": env("AWS_STORAGE_BUCKET_NAME"),
+            # Make all uploads private by default
+            "default_acl": "private",
+            # Don't overwrite files if they have the same file name
+            "file_overwrite": False,
+            "access_key": env("AWS_S3_ACCESS_KEY_ID", default=None),
+            "secret_key": env("AWS_S3_SECRET_ACCESS_KEY", default=None),
+            "endpoint_url": env("AWS_S3_ENDPOINT_URL", default=None),
+            "addressing_style": env("AWS_S3_ADDRESSING_STYLE", default=None),
+            "proxies": env.dict("AWS_S3_PROXIES", default=None),
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "OPTIONS": {
+            "location": STATIC_ROOT,
+            "base_url": STATIC_URL,
+        },
+    },
+}
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
@@ -150,14 +174,3 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# Storage
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
-# Don't overwrite files if they have the same file name
-AWS_S3_FILE_OVERWRITE = False
-AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME", default=None)
-AWS_S3_ACCESS_KEY_ID = env.str("AWS_S3_ACCESS_KEY_ID", default=None)
-AWS_S3_SECRET_ACCESS_KEY = env.str("AWS_S3_SECRET_ACCESS_KEY", default=None)
-AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default=None)

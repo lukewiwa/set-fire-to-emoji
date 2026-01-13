@@ -95,9 +95,9 @@ class OldManYellsAtView(CreateView):
             output_image.save(f, format="PNG")
             f.seek(0)
             form.instance.output_file.save(
-                f"{str(uuid4())}.gif", ContentFile(f.read()), save=True
+                f"{str(uuid4())}.png", ContentFile(f.read()), save=True
             )
-            logger.info("Generated fire gif with id %s", form.instance.pk)
+            logger.info("Generated old man png with id %s", form.instance.pk)
         return super().form_valid(form)
 
 
