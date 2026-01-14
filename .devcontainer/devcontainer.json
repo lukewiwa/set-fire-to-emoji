@@ -33,7 +33,7 @@
 				"dbaeumer.vscode-eslint",
 				"yzhang.markdown-all-in-one",
 				"esbenp.prettier-vscode",
-				"ms-python.mypy-type-checker",
+				"astral-sh.ty",
 				"charliermarsh.ruff",
 				"nefrob.vscode-just-syntax",
 				"github.vscode-github-actions"
