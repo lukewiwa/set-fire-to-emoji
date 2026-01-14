@@ -33,6 +33,6 @@
     "@aws-cdk/core:target-partitions": ["aws", "aws-cn"],
     "fullyQualifiedDomain": "setfire.lukewiwa.com",
     "githubOrg": "lukewiwa",
-    "githubRepo": "setfire"
+    "githubRepo": "set-fire-to-emoji"
   }
 }
