@@ -30,15 +30,13 @@
 				"tamasfe.even-better-toml",
 				"streetsidesoftware.code-spell-checker",
 				"batisteo.vscode-django",
-				"eamodio.gitlens",
 				"dbaeumer.vscode-eslint",
-				"VisualStudioExptTeam.vscodeintellicode",
-				"VisualStudioExptTeam.intellicode-api-usage-examples",
 				"yzhang.markdown-all-in-one",
 				"esbenp.prettier-vscode",
 				"ms-python.mypy-type-checker",
 				"charliermarsh.ruff",
-				"nefrob.vscode-just-syntax"
+				"nefrob.vscode-just-syntax",
+				"github.vscode-github-actions"
 			]
 		}
 	},
