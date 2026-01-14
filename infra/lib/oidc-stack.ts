@@ -65,10 +65,15 @@ export class OidcStack extends Stack {
             "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
           },
           StringLike: {
-            "token.actions.githubusercontent.com:sub": githubBranches.map(
-              (branch) =>
-                `repo:${githubOrg}/${githubRepo}:ref:refs/heads/${branch}`
-            ),
+            "token.actions.githubusercontent.com:sub": [
+              // Allow branch-based deployments
+              ...githubBranches.map(
+                (branch) =>
+                  `repo:${githubOrg}/${githubRepo}:ref:refs/heads/${branch}`
+              ),
+              // Allow tag-based deployments (semantic versioning only)
+              `repo:${githubOrg}/${githubRepo}:ref:refs/tags/v*`,
+            ],
           },
         },
         "sts:AssumeRoleWithWebIdentity"
