@@ -12,43 +12,42 @@ import {
   aws_cloudfront as cloudfront,
   aws_cloudfront_origins as origins,
 } from "aws-cdk-lib";
-import { CfnStage } from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
+import { LogGroupLogDestination } from "aws-cdk-lib/aws-apigatewayv2";
+import { AccessLogFormat } from "aws-cdk-lib/aws-apigateway";
 import { Construct } from "constructs";
-import { DOMAIN_NAME, FULLY_QUALIFIED_DOMAIN } from "./settings";
 
 export class InfraStack extends Stack {
   constructor(
     scope: Construct,
     id: string,
     certificate: acm.Certificate,
+    hostedZone: route53.IHostedZone,
     props?: StackProps
   ) {
     super(scope, id, props);
 
-    const hostedZone = route53.HostedZone.fromLookup(
-      this,
-      "SetFireHostedZone",
-      {
-        domainName: FULLY_QUALIFIED_DOMAIN,
-      }
-    );
+    const domainName = hostedZone.zoneName;
 
     const bucket = new s3.Bucket(this, "SetFireBucket", {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       lifecycleRules: [{ expiration: Duration.days(1) }],
     });
 
+    const djangoSecretKey = this.node.tryGetContext("djangoSecretKey") ?? "insecure-default-key";
+
     const fn = new lambda.DockerImageFunction(this, "SetFireFunctionDocker", {
       code: lambda.DockerImageCode.fromImageAsset(".."),
       environment: {
-        DJANGO_SECRET_KEY: process.env.DJANGO_SECRET_KEY ?? "",
-        ALLOWED_HOSTS: `${DOMAIN_NAME},127.0.0.1`,
+        DJANGO_SECRET_KEY: djangoSecretKey,
+        ALLOWED_HOSTS: `${domainName},127.0.0.1`,
         AWS_STORAGE_BUCKET_NAME: bucket.bucketName,
       },
       memorySize: 1024,
       timeout: Duration.seconds(20),
-      logRetention: logs.RetentionDays.ONE_MONTH,
+      logGroup: new logs.LogGroup(this, "SetFireFunctionLogs", {
+        retention: logs.RetentionDays.ONE_MONTH,
+      }),
       architecture: lambda.Architecture.ARM_64,
     });
 
@@ -59,44 +58,34 @@ export class InfraStack extends Stack {
       fn
     );
 
+    const accessLogs = new logs.LogGroup(this, "SetFireAccessLogs", {
+      retention: logs.RetentionDays.ONE_WEEK,
+    });
+
     const api = new apigwv2.HttpApi(this, "SetFireHttpApi", {
       defaultIntegration: setFireIntegration,
       createDefaultStage: false,
     });
-    const defaultStage = api.addStage("SetFireDefaultStage", {
+
+    api.addStage("SetFireDefaultStage", {
       autoDeploy: true,
       throttle: {
         burstLimit: 50,
         rateLimit: 500,
       },
+      accessLogSettings: {
+        destination: new LogGroupLogDestination(accessLogs),
+        format: AccessLogFormat.jsonWithStandardFields(),
+      },
     });
-    const cfnStage = defaultStage.node.defaultChild as CfnStage;
-    const accessLogs = new logs.LogGroup(this, "SetFireAccessLogs", {
-      retention: logs.RetentionDays.ONE_WEEK,
-    });
-    cfnStage.accessLogSettings = {
-      destinationArn: accessLogs.logGroupArn,
-      format: JSON.stringify({
-        requestId: "$context.requestId",
-        ip: "$context.identity.sourceIp",
-        requestTime: "$context.requestTime",
-        httpMethod: "$context.httpMethod",
-        routeKey: "$context.routeKey",
-        path: "$context.path",
-        status: "$context.status",
-        protocol: "$context.protocol",
-        responseLength: "$context.responseLength",
-      }),
-    };
 
-    // This is apparently the structure of the API endpoint
-    // https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-custom-domain-names.html
+    // CloudFront distribution with API Gateway origin
     const distribution = new cloudfront.Distribution(
       this,
       "SetFireCloudfrontDistribution",
       {
         certificate,
-        domainNames: [DOMAIN_NAME],
+        domainNames: [domainName],
         defaultBehavior: {
           origin: new origins.HttpOrigin(
             `${api.apiId}.execute-api.${this.region}.amazonaws.com`
@@ -128,7 +117,7 @@ export class InfraStack extends Stack {
 
     new route53.ARecord(this, "SetFireAliasRecord", {
       zone: hostedZone,
-      recordName: DOMAIN_NAME,
+      recordName: domainName,
       target: route53.RecordTarget.fromAlias(
         new targets.CloudFrontTarget(distribution)
       ),
