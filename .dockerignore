@@ -6,4 +6,5 @@
 **/.venv/
 infra/
 **/.ruff_cache/
+**/.ty_cache/
 **/__pycache__/

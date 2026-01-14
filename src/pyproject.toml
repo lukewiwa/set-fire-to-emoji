@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["ruff>=0.6.1", "ty>=0.0.11", "ipython>=8.26.0"]
+dev = ["ruff>=0.6.1", "ty>=0.0.11", "django-types>=0.19.0", "ipython>=8.26.0"]
 
 [build-system]
 requires = ["hatchling"]
@@ -26,5 +26,6 @@ build-backend = "hatchling.build"
 packages = ["."]
 
 [tool.ty]
-# ty configuration - Django plugin support not yet available
+# ty configuration
+# Using django-types for Django type stubs (works without mypy plugins)
 # ty uses project Python version from requires-python above

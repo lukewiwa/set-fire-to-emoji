@@ -3,6 +3,7 @@
 .vscode
 .env
 
+.ty_cache/
 __pycache__/
 *.pyc
 requirements.txt
