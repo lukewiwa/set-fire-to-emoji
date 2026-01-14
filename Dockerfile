@@ -9,6 +9,7 @@ ENV UV_CACHE_DIR=/tmp/uv UV_LINK_MODE=copy
 WORKDIR ${FUNCTION_DIR}
 
 FROM base AS builder
+ENV UV_NO_SYNC=true
 
 COPY src/ ${FUNCTION_DIR}
 
@@ -18,11 +19,12 @@ RUN --mount=type=cache,target=/tmp/uv \
 
 # Collect all static files
 WORKDIR ${FUNCTION_DIR}
-RUN ALLOWED_HOSTS="," SECRET_KEY=$RANDOM \
+RUN ALLOWED_HOSTS=, DJANGO_SECRET_KEY=$RANDOM  AWS_STORAGE_BUCKET_NAME=$RANDOM \
   uv run ./manage.py collectstatic --noinput --clear
 
 FROM base AS prod
 ARG FUNCTION_DIR
+ENV UV_NO_SYNC=true UV_FROZEN=true
 
 # Copy django static files
 COPY --from=builder /bundle /bundle

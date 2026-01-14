@@ -5,22 +5,19 @@ import {
   StackProps,
 } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { DOMAIN_NAME, FULLY_QUALIFIED_DOMAIN } from "./settings";
 
 export class CertificateStack extends Stack {
   public certificate: acm.Certificate;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    hostedZone: route53.IHostedZone,
+    props?: StackProps
+  ) {
     super(scope, id, props);
-    const hostedZone = route53.HostedZone.fromLookup(
-      this,
-      "SetFireHostedZone",
-      {
-        domainName: FULLY_QUALIFIED_DOMAIN,
-      }
-    );
     this.certificate = new acm.Certificate(this, "SetFireCertificate", {
-      domainName: DOMAIN_NAME,
+      domainName: hostedZone.zoneName,
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
   }

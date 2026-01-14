@@ -59,7 +59,7 @@
 			"version": "os-provided"
 		},
 		"ghcr.io/devcontainers/features/node:1": {
-			"version": "18",
+			"version": "22",
 			"nvmVersion": "latest"
 		},
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
